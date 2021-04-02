@@ -4,6 +4,7 @@ package animation;
 import gui.WorldWindow;
 import javafx.animation.AnimationTimer;
 import javafx.animation.Timeline;
+import utils.Vec3;
 
 public class Animation {
 
@@ -23,9 +24,11 @@ public class Animation {
 	private long startTime;
 	private boolean timeFlag=false;
 	
-	private double animationTime;
-	private long tmo = 0;
-	private long tailCount = 0;
+	private double animationTime 	= 0;
+	private long tmo 				= 0;
+	private long tailCount 			= 0;
+	private double tailFrequency 	= 0.3;
+	private boolean showTail 		= true;
 	
 	
 	public Animation(WorldWindow worldView) {
@@ -57,7 +60,7 @@ public class Animation {
 	            	//SequenceSet set = returnData(animationTime, animationFile, animationFrame);
 	            	// Update model position
             		double dt = (now - tmo)*0.000000001;
-            		if ( dt > 0 && dt < 2) {
+            		if ( dt > 0 && dt < 1) {
             			worldView.getUniverse().update(dt);
             		} else {
             			System.out.println("Time step error: dt = "+ dt);
@@ -72,11 +75,13 @@ public class Animation {
 	            	//worldView.setAnimationTime(animationTime);
 	            	//worldView.updateModelAttitude(set.attitude);
 	            	// Update Tail 
-            		double dTail = (now - tailCount)*0.000000001;
-	            	if ( dTail > 0.2 ) {
-	            		worldView.getUniverse().updateTail(animationTime);
-	            		tailCount = now;
-	            	} 
+            		if (showTail) {
+	            		double dTail = (now - tailCount)*0.000000001;
+		            	if ( dTail > tailFrequency ) {
+		            		worldView.getUniverse().updateTail(animationTime);
+		            		tailCount = now;
+		            	} 
+            		}
 	            	
             	} catch (Exception exp ) {
             		
@@ -118,6 +123,29 @@ public class Animation {
 
 	public boolean isAnimation_pause() {
 		return animation_pause;
+	}
+	
+	public void propagator() {
+		if (animation_stop && !animation_running) {
+			worldView.getUniverse().removeTail();
+			double dt = 0.01;
+			double dtShow = 0.5;
+			double dmo =0;
+			double tmax = 10;
+			for( double time = 0 ; time<=tmax ; time += dt) {
+				worldView.getUniverse().propUpdate(dt);
+				if ( (time - dmo ) > dtShow ) {
+					Vec3 pos = worldView.getReferenceBody().getPosition();
+					if (worldView.getReferenceBody().checkIntersect()) {
+						break;
+					} else {
+						worldView.getReferenceBody().getTail().addTailElement(time, pos);
+					}
+					dmo = time;
+				}
+			}
+			worldView.getUniverse().reset();
+		}
 	}
 	
 	

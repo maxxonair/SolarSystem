@@ -9,7 +9,7 @@ import utils.Vec3;
 public class TailElement {
 
 	private double time;
-	public Sphere sphere;
+	private Sphere sphere;
 	private Color TAIL_COLOR = Color.CYAN;
 	
 	public TailElement(double radius, double time, Vec3 position, WorldWindow worldWindow) {
@@ -33,6 +33,9 @@ public class TailElement {
 	public double getTime() {
 		return time;
 	}
-	
+
+	public Sphere getSphere() {
+		return sphere;
+	}
 	
 }

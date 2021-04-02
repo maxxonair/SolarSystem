@@ -20,17 +20,7 @@ public class EnvironmentPanel {
 		
 		VBox checkBoxes = new VBox(3);
 		VBox sliderBoxes = new VBox(3);
-		
-	    ToggleGroup group = new ToggleGroup();
-		
-
-		
-	    
-		Label environmentSizeLabel = new Label();
-		
-	    
-	    
-	   
+	     
 	    
 	    Label environmentBrightnessLabel = new Label();
 	    Slider environmentBrightness = new Slider();
@@ -48,7 +38,6 @@ public class EnvironmentPanel {
 
 		
 		sliderBoxes.setLayoutY(20);
-		sliderBoxes.getChildren().add(environmentSizeLabel);
 		sliderBoxes.getChildren().add(environmentBrightnessLabel);
 		sliderBoxes.getChildren().add(environmentBrightness);
 		

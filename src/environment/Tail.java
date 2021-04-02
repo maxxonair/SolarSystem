@@ -9,8 +9,9 @@ import utils.Vec3;
 public class Tail {
 
 List<TailElement> TailElements;
-double tailRadius = 20;
-double cutOffAge = 12;
+double tailRadius = 40;
+double cutOffAge  = 5;
+private int maxTailSize = 500;
 WorldWindow worldWindow;
 
 	public Tail(WorldWindow worldWindow) {
@@ -19,22 +20,30 @@ WorldWindow worldWindow;
 	}
 	
 	public void addTailElement(double time, Vec3 position) {
-		TailElements.add(new TailElement(tailRadius, time, position, worldWindow));
+		if (TailElements.size() <= maxTailSize ) {
+			TailElements.add(new TailElement(tailRadius, time, position, worldWindow));
+		}
 	}
 	
 	public void updateTail(double time) {
-		for (TailElement tailE : TailElements) {
+		for (int i = TailElements.size(); i >= 0; i--) {
+			TailElement tailE = TailElements.get(i);
 			if ((time - tailE.getTime()) > cutOffAge ) {
-				worldWindow.getTailGroup().getChildren().remove(tailE.sphere);
+				worldWindow.getTailGroup().getChildren().remove(tailE.getSphere());
 				TailElements.remove(tailE);
 			}
 		}
 	}
 	
 	public void clear() {
-		for (TailElement tailE : TailElements) {
-			worldWindow.getTailGroup().getChildren().remove(tailE.sphere);
-			TailElements.remove(tailE);
+		for (int i = TailElements.size(); i >= 0; i--) {
+			try {
+				TailElement tailE = TailElements.get(i);
+				worldWindow.getTailGroup().getChildren().remove(tailE.getSphere());
+				TailElements.remove(tailE);
+			} catch (Exception exp ) {
+				
+			}
 		}
 	}
 }

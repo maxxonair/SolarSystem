@@ -66,5 +66,18 @@ public class Vec3 {
     public String toString() {
         return "Vec3{" + "x=" + x + ", y=" + y + ", z=" + z + '}';
     }
+
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public void setZ(double z) {
+		this.z = z;
+	}
+    
     
 }

@@ -1,6 +1,9 @@
 package environment;
 
 import gui.WorldWindow;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Sphere;
 import utils.Vec3;
 
 public class CelestialBody {
@@ -13,6 +16,7 @@ public class CelestialBody {
 	private Vec3 initialVelocity;
 	private Vec3 initialPosition;
 	private Tail tail;
+	private Sphere sphere;
 	
 	public CelestialBody(double mass, Vec3 initialPosition, Vec3 initialVelocity, WorldWindow worldWindow) {
 		
@@ -35,6 +39,10 @@ public class CelestialBody {
 		this.radius = 0;
 		
 		init();
+		sphere= createSphere(radius);
+		sphere.setTranslateX(position.x);
+		sphere.setTranslateY(position.y);
+		sphere.setTranslateZ(position.z);
 	}
 	
 	public void init() {
@@ -74,17 +82,39 @@ public class CelestialBody {
 		position.y += velocity.y * dt;
 		position.z += velocity.z * dt;	
 		
-		// Debug
-		
-							
+		// Debug							
 	}
 
 	public double getRadius() {
 		return radius;
 	}
+	
+	public boolean checkIntersect() {
+		boolean intersect = false;
+		double intersectMargin = 0.2;
+		for (CelestialBody body : environment.getBodies()) {
+			if ( body != this) {
+				Vec3 vec = new Vec3();
+				vec.x = body.getPosition().x;
+				vec.y = body.getPosition().y;
+				vec.z = body.getPosition().z;
+				vec.substractVec(this.position);
+				double distance = vec.getSize();
+				double minDis = (body.getRadius() + radius) * (1+intersectMargin);
+				if ( distance < minDis) {
+					intersect = true;
+				}
+			}
+		}
+		return intersect;
+	}
 
 	public void setRadius(double radius) {
 		this.radius = radius;
+		sphere= createSphere(radius);
+		sphere.setTranslateX(position.x);
+		sphere.setTranslateY(position.y);
+		sphere.setTranslateZ(position.z);
 	}
 
 	public Vec3 getVelocity() {
@@ -105,7 +135,32 @@ public class CelestialBody {
 
 	public Tail getTail() {
 		return tail;
-	}	
+	}
+
+	public void setMass(double mass) {
+		this.mass = mass;
+	}
+
+	public Vec3 getInitialVelocity() {
+		return initialVelocity;
+	}
+	
+	public Sphere createSphere(double radius) {
+		Sphere sphere = new Sphere();
+		sphere.setRadius(radius);
+		return sphere;
+	}
+
+	public void setColor(Color color) {
+		PhongMaterial phong = new PhongMaterial();
+		phong.setDiffuseColor(color);
+		sphere.setMaterial(phong);
+	}
+
+	public Sphere getSphere() {
+		return sphere;
+	}
+	
 	
 	
 }

@@ -62,6 +62,7 @@ public class WorldWindow extends Application {
 	private Vec3 environmentBackgroundColor = new Vec3(0.15,0.15,0.15);
 	private double animationTime;
 	private CelestialBody referenceBody;
+	private CelestialBody sunBody;
 	
 	
 	private Environment universe;
@@ -123,13 +124,15 @@ public class WorldWindow extends Application {
 		universe = new Environment();
 		referenceBody = new CelestialBody(50,new Vec3(-9000,0,0), new Vec3(0,1600,0), this);
 		referenceBody.setRadius(100);
-		CelestialBody bodyB = new CelestialBody(5E10 ,new Vec3(0,0,0), new Vec3(0,0,0), this);
-		bodyB.setRadius(500);
-		CelestialBody bodyC = new CelestialBody(5E8 ,new Vec3(6000,100,0), new Vec3(0,1900,0), this);
+		referenceBody.setColor(Color.BLUE);
+	    sunBody = new CelestialBody(5E10 ,new Vec3(0,0,0), new Vec3(0,0,0), this);
+		sunBody.setRadius(500);
+		sunBody.setColor(Color.YELLOW);
+		CelestialBody bodyC = new CelestialBody(5E8 ,new Vec3(6000,100,0), new Vec3(0,2200,0), this);
 		bodyC.setRadius(250);
 		
 		universe.addBody(referenceBody);
-		universe.addBody(bodyB);
+		universe.addBody(sunBody);
 		universe.addBody(bodyC);
 		
 		rootGroup.getChildren().add(universe.get3dElements());
@@ -334,6 +337,10 @@ public class WorldWindow extends Application {
 	}
 	
 
+	public CelestialBody getSunBody() {
+		return sunBody;
+	}
+
 	public Animation getAnimation() {
 		return animation;
 	}
@@ -521,5 +528,10 @@ public class WorldWindow extends Application {
 	public void clearTails() {
 		tailGroup.getChildren().clear();
 	}
+
+	public CelestialBody getReferenceBody() {
+		return referenceBody;
+	}
     
+	
 }

@@ -11,6 +11,7 @@ public class ControlPanel {
 	private AnimationPanel animationPanel ;
 	private EnvironmentPanel environmentPanel;
 	private CameraPanel cameraPanel;
+	private PlanetPanel planetPanel;
 	
 	// private double MINIMUM_WIDTH = 250;
 	private double DEFAULT_WIDTH = 250;
@@ -28,10 +29,12 @@ public class ControlPanel {
 		 animationPanel = new AnimationPanel(worldView);
 		 environmentPanel = new EnvironmentPanel(worldView);
 		 cameraPanel = new CameraPanel(worldView);
+		 planetPanel = new PlanetPanel(worldView);
 		
 		contentLayout.getChildren().add(animationPanel.getContentPanel());
 		contentLayout.getChildren().add(environmentPanel.getContentPanel());
 		contentLayout.getChildren().add(cameraPanel.getContentPanel());
+		contentLayout.getChildren().add(planetPanel.getContentPanel());
 		
 		contentPane.setContent(contentLayout);
 	    
