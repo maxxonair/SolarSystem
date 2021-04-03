@@ -16,7 +16,7 @@ public class GuiMain extends Application {
 	
   public static void main(String[] args) { launch(args); }
   
-  public void start( Stage primaryStage) {
+  public void start( @SuppressWarnings("exports") Stage primaryStage) {
 		window = primaryStage;
 		window.setOnCloseRequest(e -> {
 			e.consume();

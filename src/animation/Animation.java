@@ -23,11 +23,12 @@ public class Animation {
 	//private Integer frame;
 	private long startTime;
 	private boolean timeFlag=false;
+	private boolean timestepError = false;
 	
 	private double animationTime 	= 0;
 	private long tmo 				= 0;
 	private long tailCount 			= 0;
-	private double tailFrequency 	= 0.3;
+	private double tailFrequency 	= 0.25;
 	private boolean showTail 		= true;
 	
 	
@@ -40,6 +41,7 @@ public class Animation {
 		
         timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.setRate(1);
         timeline.setAutoReverse(true);
 		
         animationTimer = new AnimationTimer() {
@@ -53,39 +55,39 @@ public class Animation {
             	} else {
             		animationTime = (now - startTime)*0.000000001;
             	}
-            	try {
-            		
-            		// Generate interpolated state
-	            	//SequenceSet set = interpolateData(animationTime, animationFile, animationFrame);
-	            	//SequenceSet set = returnData(animationTime, animationFile, animationFrame);
+
 	            	// Update model position
-            		double dt = (now - tmo)*0.000000001;
+            		
+            		double dt = (now - tmo) * 0.000000001;
             		if ( dt > 0 && dt < 1) {
             			worldView.getUniverse().update(dt);
+            			timestepError=false;
             		} else {
-            			System.out.println("Time step error: dt = "+ dt);
+            			//System.out.println("Time step error: dt = "+ dt);
+            			timestepError=true;
             		}
+            		
 	            	// Update model attitude
 	            	// TBD
+            		
             		// Update Camera 
             		if ( worldView.isThirdPersonCamera() ) {
-            			worldView. setCameraToLastRelativePosition();
+            			worldView.setCameraToLastRelativePosition();
             		}
+            		
 	            	// Update model HUD info
-	            	//worldView.setAnimationTime(animationTime);
-	            	//worldView.updateModelAttitude(set.attitude);
+            		worldView.updateHUD();
 	            	// Update Tail 
-            		if (showTail) {
-	            		double dTail = (now - tailCount)*0.000000001;
+            		
+            		if (showTail && !timestepError) {
+	            		double dTail = (now - tailCount) * 0.000000001;
 		            	if ( dTail > tailFrequency ) {
 		            		worldView.getUniverse().updateTail(animationTime);
 		            		tailCount = now;
 		            	} 
             		}
-	            	
-            	} catch (Exception exp ) {
             		
-            	}
+	            	
             	tmo = now;
             }
         };
@@ -93,11 +95,11 @@ public class Animation {
 	}
 	
 	public void start() {
+		worldView.getUniverse().removeTails();;
 		animationTimer.start();
 		animation_stop = false;
 		animation_running=true;
 		animation_pause=false;
-		worldView.clearTails();
 	}
 	
 	public void stop() {
@@ -106,7 +108,9 @@ public class Animation {
 		animation_running=false;
 		animation_pause=false;
 		timeFlag = false;
-		worldView.clearTails();
+		animationTime=0;
+		worldView.getUniverse().removeTails();
+		worldView.updateHUD();
 	}
 	
 	public void pause() {
@@ -126,8 +130,9 @@ public class Animation {
 	}
 	
 	public void propagator() {
+		
 		if (animation_stop && !animation_running) {
-			worldView.getUniverse().removeTail();
+			worldView.getUniverse().removeTails();
 			double dt = 0.01;
 			double dtShow = 0.5;
 			double dmo =0;
@@ -146,6 +151,11 @@ public class Animation {
 			}
 			worldView.getUniverse().reset();
 		}
+		
+	}
+
+	public double getAnimationTime() {
+		return animationTime;
 	}
 	
 	

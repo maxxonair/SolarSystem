@@ -9,27 +9,28 @@ public class Environment {
 
 	private List<CelestialBody> Bodies;
 	private double gravitationConstant = 6.67408E-1;
-	Group environment;
+	private Group environment;
+	private Group tailGroup;
 	
 	public Environment() {
-		Bodies = new ArrayList<CelestialBody>();
-		environment = new Group();
+		this.Bodies = new ArrayList<CelestialBody>();
+		this.environment = new Group();
+		this.tailGroup = new Group();
 		reset();
 	}
 	
 	public void addBody(CelestialBody body) {
 		body.setEnvironment(this);
-		Bodies.add(body);
-		environment.getChildren().add(body.getSphere());
+		this.Bodies.add(body);
+		this.environment.getChildren().add(body.getSphere());
+		this.tailGroup.getChildren().add(body.getTail().getTailGroup());
 	}
 	
 	public void update(double dt) {
 		for(int i=0;i<Bodies.size();i++) {
 			Bodies.get(i).updateState(dt);
-			environment.getChildren().get(i).setTranslateX(Bodies.get(i).getPosition().x);
-			environment.getChildren().get(i).setTranslateY(Bodies.get(i).getPosition().y);
-			environment.getChildren().get(i).setTranslateZ(Bodies.get(i).getPosition().z);
 		}
+		updateModelPosition();
 	}
 	
 	public void propUpdate(double dt) {
@@ -42,11 +43,21 @@ public class Environment {
 		for(int i=0;i<Bodies.size();i++) {
 			Bodies.get(i).init();
 		}
+		updateModelPosition();
+	}
+	
+	private void updateModelPosition() {
+		for(int i=0;i<Bodies.size();i++) {
+			environment.getChildren().get(i).setTranslateX(Bodies.get(i).getPosition().x);
+			environment.getChildren().get(i).setTranslateY(Bodies.get(i).getPosition().y);
+			environment.getChildren().get(i).setTranslateZ(Bodies.get(i).getPosition().z);
+		}
 	}
 	
 	public void removeAllBodies() {
 		Bodies.clear();	
 		environment.getChildren().clear();
+		tailGroup.getChildren().clear();
 	}
 
 	public List<CelestialBody> getBodies() {
@@ -67,16 +78,20 @@ public class Environment {
 	}
 	
 	public void updateTail(double time) {
-		for(int i=0;i<Bodies.size();i++) {
-			Bodies.get(i).getTail().addTailElement(time, Bodies.get(i).getPosition());
-			Bodies.get(i).getTail().updateTail(time);
+		for(CelestialBody body : this.Bodies) {
+			body.getTail().addTailElement(time, body.getPosition());
 		}
 	}
 	
-	public void removeTail() {
+	public void removeTails() {
 		for(int i=0;i<Bodies.size();i++) {
 			Bodies.get(i).getTail().clear();
 		}
 	}
+
+	public Group getTailGroup() {
+		return tailGroup;
+	}
+	
 	
 }

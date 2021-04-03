@@ -2,48 +2,53 @@ package environment;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import gui.WorldWindow;
+import javafx.scene.Group;
 import utils.Vec3;
 
 public class Tail {
 
-List<TailElement> TailElements;
-double tailRadius = 40;
-double cutOffAge  = 5;
-private int maxTailSize = 500;
-WorldWindow worldWindow;
+private List<TailElement> TailElements;
+private double tailRadius 	= 40;
+private double cutOffAge  	= 10;
+private int MAX_TAIL_SIZE   = 500;
+private Group tailGroup;
 
-	public Tail(WorldWindow worldWindow) {
+	public Tail() {
+		// init tail list:
 		TailElements = new ArrayList<TailElement>();
-		this.worldWindow = worldWindow;
+		// init tail group for 3d elements
+		tailGroup = new Group();
 	}
 	
 	public void addTailElement(double time, Vec3 position) {
-		if (TailElements.size() <= maxTailSize ) {
-			TailElements.add(new TailElement(tailRadius, time, position, worldWindow));
+		if (TailElements.size() <= MAX_TAIL_SIZE ) {
+			TailElements.add(new TailElement(tailRadius, time, position, tailGroup));
 		}
+		updateTail(time) ;
 	}
 	
 	public void updateTail(double time) {
-		for (int i = TailElements.size(); i >= 0; i--) {
+		for (int i = TailElements.size()-1; i >= 0; i--) {
 			TailElement tailE = TailElements.get(i);
-			if ((time - tailE.getTime()) > cutOffAge ) {
-				worldWindow.getTailGroup().getChildren().remove(tailE.getSphere());
+			if ( (time - tailE.getTime()) > cutOffAge ) {
+				tailGroup.getChildren().remove(tailE.getSphere());
 				TailElements.remove(tailE);
 			}
 		}
 	}
 	
 	public void clear() {
-		for (int i = TailElements.size(); i >= 0; i--) {
-			try {
-				TailElement tailE = TailElements.get(i);
-				worldWindow.getTailGroup().getChildren().remove(tailE.getSphere());
-				TailElements.remove(tailE);
-			} catch (Exception exp ) {
-				
+		if (this.TailElements.size() > 0 ) {
+			for (int i = this.TailElements.size()-1; i >= 0; i--) {
+				    this.tailGroup.getChildren().remove( i );
+					this.TailElements.remove( i );
 			}
 		}
 	}
+
+	public Group getTailGroup() {
+		return tailGroup;
+	}
+	
+	
 }

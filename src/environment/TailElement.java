@@ -1,6 +1,6 @@
 package environment;
 
-import gui.WorldWindow;
+import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
@@ -10,14 +10,14 @@ public class TailElement {
 
 	private double time;
 	private Sphere sphere;
-	private Color TAIL_COLOR = Color.CYAN;
+	private Color TAIL_COLOR = Color.RED;
 	
-	public TailElement(double radius, double time, Vec3 position, WorldWindow worldWindow) {
+	public TailElement(double radius, double time, Vec3 position, Group tailGroup) {
 		sphere = createSphere(radius);
 		sphere.setTranslateX(position.x);
 		sphere.setTranslateY(position.y);
 		sphere.setTranslateZ(position.z);
-		worldWindow.getTailGroup().getChildren().add(sphere);
+		tailGroup.getChildren().add(sphere);
 		this.time = time; 
 	}
 	

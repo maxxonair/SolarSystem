@@ -1,6 +1,5 @@
 package environment;
 
-import gui.WorldWindow;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
@@ -18,9 +17,9 @@ public class CelestialBody {
 	private Tail tail;
 	private Sphere sphere;
 	
-	public CelestialBody(double mass, Vec3 initialPosition, Vec3 initialVelocity, WorldWindow worldWindow) {
+	public CelestialBody(double mass, Vec3 initialPosition, Vec3 initialVelocity) {
 		
-		this.tail = new Tail(worldWindow);
+		tail = new Tail();
 		this.mass = mass;
 		
 		this.initialPosition = new Vec3();
@@ -80,9 +79,7 @@ public class CelestialBody {
 		// Update Position
 	    position.x += velocity.x * dt;
 		position.y += velocity.y * dt;
-		position.z += velocity.z * dt;	
-		
-		// Debug							
+		position.z += velocity.z * dt;									
 	}
 
 	public double getRadius() {
@@ -159,8 +156,6 @@ public class CelestialBody {
 
 	public Sphere getSphere() {
 		return sphere;
-	}
-	
-	
+	}	
 	
 }

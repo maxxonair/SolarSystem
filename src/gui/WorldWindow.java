@@ -11,6 +11,7 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -19,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 import utils.EmptyButton;
+import utils.Formats;
 import utils.Vec3;
 
 public class WorldWindow extends Application {
@@ -47,9 +49,7 @@ public class WorldWindow extends Application {
 	private double cameraCtrlSensitivity = 0.1;
 	private boolean  goNorth, goSouth, goEast, goWest, goForward, goBackward;
 	
-	private Group environment;
 	private Group rootGroup;
-	private Group tailGroup;
 	private SubScene scene;
 	
 	private Rotate cameraRotX,cameraRotY;
@@ -61,12 +61,16 @@ public class WorldWindow extends Application {
 	private AnchorPane anchorPane;
 	private Vec3 environmentBackgroundColor = new Vec3(0.15,0.15,0.15);
 	private double animationTime;
+	
 	private CelestialBody referenceBody;
 	private CelestialBody sunBody;
 	
 	
 	private Environment universe;
 	private Animation animation;
+	
+	private Label HUD_simulationTime;
+	private Group HUD_Elements;
 	
 	
 	public WorldWindow() {
@@ -79,7 +83,6 @@ public class WorldWindow extends Application {
 		// Model 
 		//---------------------------------------------------------------------------
 	    rootGroup = new Group();
-	    tailGroup = new Group();
 	    anchorPane = new AnchorPane();
 	    animation = new Animation(this);
 		//---------------------------------------------------------------------------
@@ -112,30 +115,31 @@ public class WorldWindow extends Application {
 		cameraRelativePosition.z = DEFAULT_RELATIVE_CAMERA_POSITION.z ;
 		
 		
-	    environment = new Group();
-		
 		rootGroup.getChildren().add(camera);
-		rootGroup.getChildren().add(tailGroup);
-		
 		//---------------------------------------------------------------------------
 		//  Add content 
 		//---------------------------------------------------------------------------
 		
 		universe = new Environment();
-		referenceBody = new CelestialBody(50,new Vec3(-9000,0,0), new Vec3(0,1600,0), this);
+		
+		referenceBody = new CelestialBody(50,new Vec3(-9000,0,0), new Vec3(0,1600,0));
 		referenceBody.setRadius(100);
 		referenceBody.setColor(Color.BLUE);
-	    sunBody = new CelestialBody(5E10 ,new Vec3(0,0,0), new Vec3(0,0,0), this);
+		
+	    sunBody = new CelestialBody(5E10 ,new Vec3(0,0,0), new Vec3(0,0,0));
 		sunBody.setRadius(500);
 		sunBody.setColor(Color.YELLOW);
-		CelestialBody bodyC = new CelestialBody(5E8 ,new Vec3(6000,100,0), new Vec3(0,2200,0), this);
+		
+		CelestialBody bodyC = new CelestialBody(3E9 ,new Vec3(6000,100,0), new Vec3(0,2200,0));
 		bodyC.setRadius(250);
+		bodyC.setColor(Color.PURPLE);
 		
 		universe.addBody(referenceBody);
 		universe.addBody(sunBody);
 		universe.addBody(bodyC);
 		
 		rootGroup.getChildren().add(universe.get3dElements());
+		rootGroup.getChildren().add(universe.getTailGroup());
 		//---------------------------------------------------------------------------
 		// Scene
 		//---------------------------------------------------------------------------
@@ -334,6 +338,17 @@ public class WorldWindow extends Application {
 		
 		animation.start();
 		animation.stop();
+		
+       //---------------------------------------------------------------------------
+       // Head-on Display
+       //---------------------------------------------------------------------------
+		HUD_simulationTime = new Label("Simulation Time [s]: 0");
+		HUD_simulationTime.setLayoutY(0);
+		
+	    HUD_Elements = new Group();
+	    HUD_Elements.getChildren().add(HUD_simulationTime);
+        
+		anchorPane.getChildren().add(HUD_Elements);
 	}
 	
 
@@ -347,6 +362,15 @@ public class WorldWindow extends Application {
 
 	public AnchorPane getAnchorPane() {
 		return anchorPane;
+	}
+	
+	public void updateHUD() {
+		try {
+			HUD_simulationTime.setText("Animation Time [s]: "+
+						 Formats.decform01.format(animation.getAnimationTime()));
+		} catch (Exception exp){
+			
+		}
 	}
 	
 	@SuppressWarnings("unused")
@@ -518,15 +542,6 @@ public class WorldWindow extends Application {
 	@SuppressWarnings("exports")
 	public Group getRootGroup() {
 		return rootGroup;
-	}
-
-	@SuppressWarnings("exports")
-	public Group getTailGroup() {
-		return tailGroup;
-	}
-	
-	public void clearTails() {
-		tailGroup.getChildren().clear();
 	}
 
 	public CelestialBody getReferenceBody() {
